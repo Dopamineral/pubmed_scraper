@@ -18,8 +18,11 @@ def enter_query(query):
 def get_href():
 	"""Ïterates through all results, adding href and title to list. Returns that list."""
 	href_list = []
-	total_pages = driver.find_element_by_name("EntrezSystem2.PEntrez.PubMed.Pubmed_ResultsPanel.Pubmed_Pager.cPage")
-	page_end = total_pages.get_attribute("last")
+	try:
+		total_pages = driver.find_element_by_name("EntrezSystem2.PEntrez.PubMed.Pubmed_ResultsPanel.Pubmed_Pager.cPage")
+		page_end = total_pages.get_attribute("last")
+	except:
+		page_end = 1
 
 	for i in range(int(page_end)):
 	#for i in range(1):
@@ -27,7 +30,10 @@ def get_href():
 		for title in driver.find_elements_by_class_name("title"):
 			href = title.find_element_by_css_selector('a').get_attribute('href')
 			href_list.append(href)
-		driver.find_element_by_class_name("next").click()
+		try:
+			driver.find_element_by_class_name("next").click()
+		except:
+			pass
 	return(href_list)
 
 def extract_data():
@@ -68,7 +74,7 @@ if __name__ == "__main__":
 	print("Starting Query")
 
 	#insert search quary below
-	query = '"colonic neoplasms"[MeSH Terms] AND ("ethanol"[MeSH Terms] OR "alcohols"[MeSH Terms]) AND Clinical Trial[ptyp])'
+	query = '"Olfactory Cortex"[Mesh]) AND "Neural Pathways"[Mesh] '
 	enter_query(query)
 
 	
@@ -83,7 +89,7 @@ if __name__ == "__main__":
 		full_data_list.append(extract_data())
 	driver.close()
 
-	filename = "Colon Cancer and Ethanol Clinical Trials" + ".txt"
+	filename = "Neural Pathways - Olfactory Cortex" + ".txt"
 	print("Writing To file: {}".format(filename))
 	write_data_to_file(query,full_data_list,filename)
 
